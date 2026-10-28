@@ -1,8 +1,18 @@
+
+import { motion } from "motion/react";
+
 function Home() {
   return (
     <main className="py-5">
       <div className="container">
-        <h1 className="fw-bold">PULSE360</h1>
+        <motion.h1
+          className="fw-bold"
+          initial={{ opacity: 0, y: 100 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 2, ease: "easeOut" }}
+        >
+          PULSE360
+        </motion.h1>
 
         <p className="lead">
           Public Health & Healthcare Network

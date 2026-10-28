@@ -1,7 +1,8 @@
 
 import "./index.css";
 import { useState } from "react";
-
+import Reveal from "./components/animations/Reveal";
+import { motion } from "motion/react";
 const services = [
   {
     icon: "bi-hospital",
@@ -621,24 +622,46 @@ function Footer() {
   );
 }
 
+
 function App() {
   return (
     <div className="pulse-app">
       <Navbar />
 
       <main>
-        <Hero />
-        <Services />
-        <HealthcareFinder />
-        <HealthAwareness />
-        <CompanyRegistration />
-        <HowItWorks />
-        <GetStarted />
+        <Reveal>
+          <Hero />
+        </Reveal>
+
+        <Reveal delay={0.1}>
+          <Services />
+        </Reveal>
+
+        <Reveal delay={0.1}>
+          <HealthcareFinder />
+        </Reveal>
+
+        <Reveal delay={0.1}>
+          <HealthAwareness />
+        </Reveal>
+
+        <Reveal delay={0.1}>
+          <CompanyRegistration />
+        </Reveal>
+
+        <Reveal delay={0.1}>
+          <HowItWorks />
+        </Reveal>
+
+        <Reveal delay={0.1}>
+          <GetStarted />
+        </Reveal>
       </main>
 
       <Footer />
     </div>
   );
 }
+
 
 export default App;
