@@ -5,7 +5,7 @@ import Reveal from "./components/animations/Reveal";
 import { motion } from "motion/react";
 const services = [
   {
-    icon: "bi-hospital",
+    icon: "bi-hospital"
     title: "Healthcare Finder",
     description:
       "Discover hospitals, clinics, and healthcare facilities to help you find the care you need.",
