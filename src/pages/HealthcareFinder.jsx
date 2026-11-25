@@ -1,43 +1,37 @@
 import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import Reveal from "../components/animations/Reveal";
+import { FormInput, FormTextarea } from "../components/ui/FormComponents";
 import { getFacilities } from "../services/api";
+import { NIGERIA_STATES } from "../data/nigeriaGeo";
 
 const FACILITY_TYPES = [
   { id: "all", label: "All Facilities", icon: "bi-grid-fill" },
   { id: "hospital", label: "Hospitals", icon: "bi-hospital" },
-  { id: "clinic", label: "Clinics", icon: "bi-bandaid" },
+  { id: "clinic", label: "PHCs & Clinics", icon: "bi-bandaid" },
   { id: "emergency", label: "24/7 Urgent Care", icon: "bi-lightning-charge-fill" },
-  { id: "pharmacy", label: "Pharmacies", icon: "bi-capsule" },
+  { id: "pharmacy", label: "PCN Pharmacies", icon: "bi-capsule" },
   { id: "diagnostic", label: "Diagnostic Labs", icon: "bi-clipboard2-pulse" },
-];
-
-const CITIES = [
-  "All Cities",
-  "Metro Central",
-  "Green Valley Suburb",
-  "North Valley",
-  "Eastern Coastline",
-  "Delta River Basin",
-  "Industrial Belt",
 ];
 
 function HealthcareFinder() {
   const [searchParams, setSearchParams] = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
   const initialId = searchParams.get("id") || null;
+  const initialState = searchParams.get("state") || "All States";
 
   const [facilities, setFacilities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState(initialQuery);
   const [selectedType, setSelectedType] = useState("all");
-  const [selectedCity, setSelectedCity] = useState("All Cities");
+  const [selectedState, setSelectedState] = useState(initialState);
+  const [selectedLga, setSelectedLga] = useState("All LGAs");
   const [only247, setOnly247] = useState(false);
   const [onlyInsurance, setOnlyInsurance] = useState(false);
   const [onlyVerified, setOnlyVerified] = useState(false);
   const [sortBy, setSortBy] = useState("rating");
   const [selectedFacility, setSelectedFacility] = useState(null);
-  const [viewMode, setViewMode] = useState("grid"); // 'grid' or 'list'
+  const [viewMode, setViewMode] = useState("grid");
   const [inquirySent, setInquirySent] = useState(false);
 
   useEffect(() => {
@@ -55,38 +49,47 @@ function HealthcareFinder() {
     load();
   }, [initialId]);
 
-  // Filter & Sort logic
+  const availableLgas = useMemo(() => {
+    if (selectedState === "All States") return [];
+    const found = NIGERIA_STATES.find((s) => s.name === selectedState);
+    return found ? found.lgas : [];
+  }, [selectedState]);
+
+  const handleStateChange = (newState) => {
+    setSelectedState(newState);
+    setSelectedLga("All LGAs");
+  };
+
   const filteredFacilities = useMemo(() => {
     return facilities
       .filter((fac) => {
-        // Search term
         if (searchTerm.trim()) {
           const q = searchTerm.toLowerCase();
           const matchesName = fac.name.toLowerCase().includes(q);
-          const matchesCity = fac.city.toLowerCase().includes(q);
+          const matchesState = fac.state?.toLowerCase().includes(q);
+          const matchesLga = fac.lga?.toLowerCase().includes(q);
+          const matchesCity = fac.city?.toLowerCase().includes(q);
           const matchesCategory = fac.category?.toLowerCase().includes(q);
           const matchesServices = fac.services?.some((s) => s.toLowerCase().includes(q));
-          if (!matchesName && !matchesCity && !matchesCategory && !matchesServices) {
+          if (!matchesName && !matchesState && !matchesLga && !matchesCity && !matchesCategory && !matchesServices) {
             return false;
           }
         }
-        // Type
         if (selectedType !== "all" && fac.type.toLowerCase() !== selectedType.toLowerCase()) {
           return false;
         }
-        // City
-        if (selectedCity !== "All Cities" && fac.city !== selectedCity) {
+        if (selectedState !== "All States" && fac.state !== selectedState) {
           return false;
         }
-        // 24/7
+        if (selectedLga !== "All LGAs" && fac.lga !== selectedLga) {
+          return false;
+        }
         if (only247 && !fac.isOpen24x7) {
           return false;
         }
-        // Insurance
         if (onlyInsurance && !fac.acceptsInsurance) {
           return false;
         }
-        // Verified
         if (onlyVerified && !fac.isVerified) {
           return false;
         }
@@ -98,12 +101,13 @@ function HealthcareFinder() {
         if (sortBy === "name") return a.name.localeCompare(b.name);
         return 0;
       });
-  }, [facilities, searchTerm, selectedType, selectedCity, only247, onlyInsurance, onlyVerified, sortBy]);
+  }, [facilities, searchTerm, selectedType, selectedState, selectedLga, only247, onlyInsurance, onlyVerified, sortBy]);
 
   const resetFilters = () => {
     setSearchTerm("");
     setSelectedType("all");
-    setSelectedCity("All Cities");
+    setSelectedState("All States");
+    setSelectedLga("All LGAs");
     setOnly247(false);
     setOnlyInsurance(false);
     setOnlyVerified(false);
@@ -123,28 +127,25 @@ function HealthcareFinder() {
 
   return (
     <div className="healthcare-finder-page">
-      {/* Page Header */}
       <section className="finder-header-banner">
         <div className="container">
           <Reveal>
             <div className="header-meta">
-              <span className="section-eyebrow">HEALTHCARE DIRECTORY & ACCESS</span>
-              <h1>Find Healthcare Facilities</h1>
+              <span className="section-eyebrow">NIGERIA HEALTHCARE DIRECTORY (STATE → LGA → FACILITY)</span>
+              <h1>Find Healthcare Facilities in Nigeria</h1>
               <p className="page-lead">
-                Search verified hospitals, community clinics, 24/7 trauma emergency units,
-                and licensed pharmacies across the national network.
+                Search verified Federal Teaching Hospitals, Primary Health Centres (PHCs), PCN-licensed pharmacies, and NHIA/HMO-accredited clinics across Nigeria.
               </p>
             </div>
           </Reveal>
 
-          {/* Search Box inside Banner */}
           <div className="search-bar-card">
             <div className="search-bar-main">
               <div className="search-input-col">
                 <i className="bi bi-search search-lens"></i>
                 <input
                   type="text"
-                  placeholder="Search by facility name, medical specialty (e.g. Cardiology, Pediatrics, Trauma)..."
+                  placeholder="Search by facility name, service, LGA, or specialty (e.g. LUTH, Maternity, Malaria RDT)..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="main-search-input"
@@ -163,20 +164,39 @@ function HealthcareFinder() {
               <div className="city-select-col">
                 <i className="bi bi-geo-alt-fill text-muted me-2"></i>
                 <select
-                  value={selectedCity}
-                  onChange={(e) => setSelectedCity(e.target.value)}
+                  value={selectedState}
+                  onChange={(e) => handleStateChange(e.target.value)}
                   className="city-select"
+                  aria-label="Filter by State"
                 >
-                  {CITIES.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
+                  <option value="All States">All States (Nigeria)</option>
+                  {NIGERIA_STATES.map((s) => (
+                    <option key={s.name} value={s.name}>
+                      {s.name}
                     </option>
                   ))}
                 </select>
               </div>
+
+              {selectedState !== "All States" && (
+                <div className="city-select-col">
+                  <select
+                    value={selectedLga}
+                    onChange={(e) => setSelectedLga(e.target.value)}
+                    className="city-select"
+                    aria-label="Filter by LGA"
+                  >
+                    <option value="All LGAs">All LGAs in {selectedState}</option>
+                    {availableLgas.map((lga) => (
+                      <option key={lga} value={lga}>
+                        {lga} LGA
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
 
-            {/* Quick Type Filter Tabs */}
             <div className="type-pills-row">
               {FACILITY_TYPES.map((t) => (
                 <button
@@ -193,10 +213,8 @@ function HealthcareFinder() {
         </div>
       </section>
 
-      {/* Main Content Area: Filters Sidebar + Results Grid */}
       <section className="finder-results-section">
         <div className="container finder-layout">
-          {/* Filter Sidebar */}
           <aside className="finder-sidebar">
             <div className="filter-card">
               <div className="filter-card-header">
@@ -208,9 +226,8 @@ function HealthcareFinder() {
                 </button>
               </div>
 
-              {/* Toggles */}
               <div className="filter-group">
-                <label className="filter-group-title">Special Criteria</label>
+                <label className="filter-group-title">Availability &amp; Insurance</label>
                 <div className="checkbox-item">
                   <input
                     type="checkbox"
@@ -219,7 +236,7 @@ function HealthcareFinder() {
                     onChange={(e) => setOnly247(e.target.checked)}
                   />
                   <label htmlFor="filter247">
-                    <span className="badge-pill-inline bg-success-soft">24/7</span> Open 24/7 Only
+                    <span className="badge-pill-inline bg-success-soft">24/7</span> Open 24/7 Emergency
                   </label>
                 </div>
 
@@ -231,7 +248,7 @@ function HealthcareFinder() {
                     onChange={(e) => setOnlyInsurance(e.target.checked)}
                   />
                   <label htmlFor="filterInsurance">
-                    <i className="bi bi-shield-check text-primary me-1"></i> Accepts Insurance
+                    <i className="bi bi-shield-check text-primary me-1"></i> NHIA / HMO Accredited
                   </label>
                 </div>
 
@@ -248,7 +265,6 @@ function HealthcareFinder() {
                 </div>
               </div>
 
-              {/* Sort By */}
               <div className="filter-group">
                 <label className="filter-group-title" htmlFor="sortSelect">
                   Sort Facilities
@@ -265,27 +281,26 @@ function HealthcareFinder() {
                 </select>
               </div>
 
-              {/* Emergency Hotline Alert Box */}
               <div className="sidebar-emergency-box">
                 <div className="box-icon">
                   <i className="bi bi-telephone-fill"></i>
                 </div>
-                <h4>Medical Emergency?</h4>
-                <p>If you are experiencing life-threatening symptoms, dial national dispatch immediately:</p>
+                <h4>Nigeria Medical Emergency?</h4>
+                <p>For life-threatening emergencies anywhere in Nigeria, dial national dispatch immediately:</p>
                 <a href="tel:112" className="emergency-call-btn">
-                  Call 112 / 911 Now
+                  Call 112 Toll-Free Now
                 </a>
               </div>
             </div>
           </aside>
 
-          {/* Results List / Grid */}
           <div className="finder-results-content">
             <div className="results-toolbar">
               <div className="results-count">
                 Showing <strong>{filteredFacilities.length}</strong> {filteredFacilities.length === 1 ? "facility" : "facilities"}
-                {selectedType !== "all" && <span className="active-filter-badge">Type: {selectedType}</span>}
-                {selectedCity !== "All Cities" && <span className="active-filter-badge">City: {selectedCity}</span>}
+                {selectedState !== "All States" && <span className="active-filter-badge">{selectedState}</span>}
+                {selectedLga !== "All LGAs" && <span className="active-filter-badge">{selectedLga} LGA</span>}
+                {selectedType !== "all" && <span className="active-filter-badge">{selectedType}</span>}
               </div>
 
               <div className="view-mode-buttons">
@@ -309,15 +324,15 @@ function HealthcareFinder() {
             {loading ? (
               <div className="loading-state">
                 <div className="spinner-border text-primary" role="status"></div>
-                <p>Loading verified healthcare facilities...</p>
+                <p>Loading verified Nigerian healthcare facilities...</p>
               </div>
             ) : filteredFacilities.length === 0 ? (
               <div className="empty-results-box">
                 <i className="bi bi-search text-muted display-4"></i>
                 <h3>No Facilities Found</h3>
-                <p>No healthcare facilities matched your current filter combinations.</p>
+                <p>No healthcare facilities matched your current State/LGA or filter criteria.</p>
                 <button onClick={resetFilters} className="button button-primary">
-                  Clear Filters & Show All
+                  Clear Filters &amp; Show All
                 </button>
               </div>
             ) : (
@@ -331,7 +346,7 @@ function HealthcareFinder() {
                         </span>
                         {fac.isOpen24x7 && <span className="badge-247">24/7 OPEN</span>}
                         {fac.isVerified && (
-                          <span className="badge-verified" title="Verified by Ministry of Health">
+                          <span className="badge-verified" title="Verified Facility">
                             <i className="bi bi-patch-check-fill"></i> Verified
                           </span>
                         )}
@@ -345,12 +360,12 @@ function HealthcareFinder() {
                     </div>
 
                     <h3 className="facility-name">{fac.name}</h3>
-                    <div className="facility-category">{fac.category}</div>
+                    <div className="facility-category">{fac.tier || fac.category}</div>
 
                     <div className="facility-meta-list">
                       <div className="meta-item">
                         <i className="bi bi-geo-alt-fill text-primary"></i>
-                        <span>{fac.address}, {fac.city}</span>
+                        <span>{fac.address}, {fac.lga ? `${fac.lga} LGA, ` : ""}{fac.state}</span>
                       </div>
                       <div className="meta-item">
                         <i className="bi bi-clock-fill text-muted"></i>
@@ -397,7 +412,7 @@ function HealthcareFinder() {
                         onClick={() => handleOpenModal(fac)}
                         className="button button-primary btn-details"
                       >
-                        View Full Details
+                        Facility Profile
                         <i className="bi bi-arrow-right ms-1"></i>
                       </button>
                     </div>
@@ -409,7 +424,6 @@ function HealthcareFinder() {
         </div>
       </section>
 
-      {/* Facility Detail Modal */}
       {selectedFacility && (
         <div className="modal-backdrop-custom" onClick={handleCloseModal}>
           <div className="facility-modal-dialog" onClick={(e) => e.stopPropagation()}>
@@ -422,12 +436,12 @@ function HealthcareFinder() {
                   {selectedFacility.isOpen24x7 && <span className="badge-247">24/7 OPEN</span>}
                   {selectedFacility.isVerified && (
                     <span className="badge-verified">
-                      <i className="bi bi-patch-check-fill"></i> Verified Facility
+                      <i className="bi bi-patch-check-fill"></i> Verified
                     </span>
                   )}
                 </div>
                 <h2>{selectedFacility.name}</h2>
-                <div className="modal-category">{selectedFacility.category}</div>
+                <div className="modal-category">{selectedFacility.tier || selectedFacility.category}</div>
               </div>
               <button onClick={handleCloseModal} className="btn-close-modal" aria-label="Close dialog">
                 <i className="bi bi-x-lg"></i>
@@ -436,15 +450,14 @@ function HealthcareFinder() {
 
             <div className="modal-body-custom">
               <div className="modal-grid">
-                {/* Left Column: Details */}
                 <div className="modal-details-col">
                   <div className="modal-section">
                     <h4>About this Facility</h4>
-                    <p>{selectedFacility.description || "Comprehensive healthcare facility serving the regional community with accredited medical staff and dedicated clinical care."}</p>
+                    <p>{selectedFacility.description || "Verified Nigerian healthcare facility providing accredited clinical care."}</p>
                   </div>
 
                   <div className="modal-section">
-                    <h4>Clinical Services & Specialties</h4>
+                    <h4>Clinical Services &amp; Specialties</h4>
                     <div className="modal-services-grid">
                       {selectedFacility.services?.map((serv) => (
                         <div key={serv} className="modal-service-tag">
@@ -457,7 +470,7 @@ function HealthcareFinder() {
 
                   {selectedFacility.insuranceProviders && (
                     <div className="modal-section">
-                      <h4>Accepted Health Insurance</h4>
+                      <h4>Accepted NHIA &amp; HMO Schemes</h4>
                       <div className="insurance-tags-row">
                         {selectedFacility.insuranceProviders.map((ins) => (
                           <span key={ins} className="insurance-tag">
@@ -470,13 +483,13 @@ function HealthcareFinder() {
                   )}
 
                   <div className="modal-section">
-                    <h4>Contact & Hours</h4>
+                    <h4>Location &amp; Contact</h4>
                     <div className="contact-details-grid">
                       <div className="cd-box">
                         <i className="bi bi-geo-alt text-primary"></i>
                         <div>
-                          <strong>Physical Address</strong>
-                          <span>{selectedFacility.address}, {selectedFacility.city}, {selectedFacility.state}</span>
+                          <strong>State / LGA / Address</strong>
+                          <span>{selectedFacility.address}, {selectedFacility.lga} LGA, {selectedFacility.state}</span>
                         </div>
                       </div>
                       <div className="cd-box">
@@ -496,7 +509,7 @@ function HealthcareFinder() {
                       <div className="cd-box">
                         <i className="bi bi-lightning-charge-fill text-danger"></i>
                         <div>
-                          <strong>Emergency Hotline</strong>
+                          <strong>Emergency Dispatch</strong>
                           <a href={`tel:${selectedFacility.emergencyPhone || selectedFacility.phone}`}>
                             {selectedFacility.emergencyPhone || selectedFacility.phone}
                           </a>
@@ -506,18 +519,17 @@ function HealthcareFinder() {
                   </div>
                 </div>
 
-                {/* Right Column: Quick Action Box / Inquire Form */}
                 <div className="modal-action-col">
                   <div className="inquiry-card">
-                    <h4>Fast Contact / Inquiry</h4>
+                    <h4>Facility Inquiry</h4>
                     <p className="small text-muted">
-                      Have a query about services, specialist appointments, or medication availability?
+                      Ask about clinic hours, NHIA/HMO clearance, or specialist availability.
                     </p>
 
                     {inquirySent ? (
                       <div className="alert alert-success">
                         <i className="bi bi-check-circle-fill me-2"></i>
-                        Inquiry submitted! The hospital reception will contact you shortly.
+                        Inquiry sent! The facility desk will respond shortly.
                       </div>
                     ) : (
                       <form
@@ -526,18 +538,27 @@ function HealthcareFinder() {
                           setInquirySent(true);
                         }}
                       >
-                        <div className="mb-2">
-                          <label className="form-label small">Your Name</label>
-                          <input type="text" required className="form-control form-control-sm" placeholder="John Doe" />
-                        </div>
-                        <div className="mb-2">
-                          <label className="form-label small">Phone / Email</label>
-                          <input type="text" required className="form-control form-control-sm" placeholder="contact@example.com" />
-                        </div>
-                        <div className="mb-3">
-                          <label className="form-label small">Message / Inquiry</label>
-                          <textarea rows="3" required className="form-control form-control-sm" placeholder="Inquire about emergency services, consultation hours..."></textarea>
-                        </div>
+                        <FormInput
+                          id="inqName"
+                          label="Your Name"
+                          required
+                          icon="bi-person"
+                          placeholder="e.g. Chinedu Okafor"
+                        />
+                        <FormInput
+                          id="inqContact"
+                          label="Phone / Email"
+                          required
+                          icon="bi-telephone"
+                          placeholder="+234 803..."
+                        />
+                        <FormTextarea
+                          id="inqMessage"
+                          label="Inquiry"
+                          required
+                          rows={3}
+                          placeholder="Inquire about antenatal clinic, NHIA coverage..."
+                        />
                         <button type="submit" className="button button-primary w-100">
                           Submit Inquiry
                         </button>
@@ -546,7 +567,7 @@ function HealthcareFinder() {
 
                     <div className="direct-call-box mt-3">
                       <a
-                        href={`tel:${selectedFacility.emergencyPhone || selectedFacility.phone}`}
+                        href={`tel:${selectedFacility.phone}`}
                         className="btn-call-emergency-direct"
                       >
                         <i className="bi bi-telephone-fill me-2"></i>

@@ -1,13 +1,69 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import Reveal from "../components/animations/Reveal";
+import { FormInput, FormSelect } from "../components/ui/FormComponents";
 import { signIn } from "../services/api";
+
+const DEMO_ACCOUNTS = [
+  {
+    label: "Facility Staff",
+    name: "Pharm. Adebayo Ogunleye",
+    email: "adebayo.ogunleye@luth.gov.ng",
+    role: "facility_staff",
+    org: "Lagos University Teaching Hospital (LUTH)",
+  },
+  {
+    label: "Warehouse Officer",
+    name: "Ibrahim Suleiman",
+    email: "ibrahim.suleiman@oshodistore.gov.ng",
+    role: "warehouse_officer",
+    org: "Central Medical Store — Oshodi, Lagos",
+  },
+  {
+    label: "Logistics",
+    name: "Chukwudi Okafor",
+    email: "chukwudi@tranexmed.ng",
+    role: "logistics",
+    org: "Tranex Medical Logistics Nigeria",
+  },
+  {
+    label: "Public Health Officer",
+    name: "Dr. Ngozi Okonjo-Madu",
+    email: "ngozi.madu@ncdc.gov.ng",
+    role: "public_health_officer",
+    org: "NCDC Surveillance EOC",
+  },
+  {
+    label: "Administrator",
+    name: "Tunde Bakare",
+    email: "admin@pulse360.ng",
+    role: "admin",
+    org: "PULSE360 Nigeria Governance",
+  },
+  {
+    label: "Citizen",
+    name: "Amina Yusuf",
+    email: "amina.yusuf@example.ng",
+    role: "citizen",
+    org: "Public Citizen",
+  },
+];
+
+const ROLE_OPTIONS = [
+  { value: "facility_staff", label: "Facility Staff (Hospital / PHC)" },
+  { value: "warehouse_officer", label: "Warehouse / Supply Officer" },
+  { value: "logistics", label: "Logistics Provider" },
+  { value: "public_health_officer", label: "Public Health Officer (NCDC / State MoH)" },
+  { value: "admin", label: "System Administrator" },
+  { value: "citizen", label: "Citizen / Community Member" },
+];
 
 function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [role, setRole] = useState("citizen");
-  const [showPassword, setShowPassword] = useState(false);
+  const [role, setRole] = useState("facility_staff");
+  const [organization, setOrganization] = useState("Lagos State Health Network");
+  const [customName, setCustomName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -18,10 +74,9 @@ function SignIn() {
     setLoading(true);
 
     try {
-      await signIn({ email, password, role });
-      // Dispatch event so Navbar re-renders immediately
+      await signIn({ email, password, role, organization, name: customName });
       window.dispatchEvent(new Event("pulse360-auth-change"));
-      navigate("/");
+      navigate(role === "citizen" ? "/" : "/pro");
     } catch (err) {
       setError(err.message || "Failed to sign in. Please verify your credentials.");
     } finally {
@@ -29,16 +84,27 @@ function SignIn() {
     }
   };
 
-  const handleQuickDemo = (demoEmail, demoRole) => {
-    setEmail(demoEmail);
+  const handleQuickDemo = async (demo) => {
+    setEmail(demo.email);
     setPassword("pulse360demo");
-    setRole(demoRole);
+    setRole(demo.role);
+    setOrganization(demo.org);
+    setCustomName(demo.name);
+    await signIn({
+      email: demo.email,
+      password: "pulse360demo",
+      role: demo.role,
+      organization: demo.org,
+      name: demo.name,
+    });
+    window.dispatchEvent(new Event("pulse360-auth-change"));
+    navigate(demo.role === "citizen" ? "/" : "/pro");
   };
 
   return (
     <div className="auth-page">
       <div className="container py-5">
-        <div className="auth-card-container">
+        <div className="auth-card-container" style={{ maxWidth: "560px" }}>
           <Reveal>
             <div className="auth-card">
               <div className="auth-header">
@@ -50,132 +116,85 @@ function SignIn() {
                     <span className="brand-name">
                       PULSE<span>360</span>
                     </span>
-                    <span className="brand-caption">PUBLIC HEALTH NETWORK</span>
+                    <span className="brand-caption">NIGERIA PUBLIC HEALTH NETWORK</span>
                   </span>
                 </Link>
 
-                <h2>Welcome Back</h2>
-                <p className="auth-sub">Sign in to your PULSE360 account</p>
+                <h2>Sign In to PULSE360</h2>
+                <p className="auth-sub">Access the Public Layer or Professional Operations Command</p>
               </div>
 
-              {/* Role Selector Tabs */}
-              <div className="role-tabs">
-                <button
-                  type="button"
-                  onClick={() => setRole("citizen")}
-                  className={`role-tab ${role === "citizen" ? "active" : ""}`}
-                >
-                  <i className="bi bi-person me-1"></i> Citizen
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setRole("provider")}
-                  className={`role-tab ${role === "provider" ? "active" : ""}`}
-                >
-                  <i className="bi bi-hospital me-1"></i> Provider
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setRole("supplier")}
-                  className={`role-tab ${role === "supplier" ? "active" : ""}`}
-                >
-                  <i className="bi bi-capsule me-1"></i> Supplier
-                </button>
-              </div>
-
-              {/* Quick Demo Fill Buttons */}
-              <div className="quick-demo-strip">
-                <span className="demo-label">1-Click Demo Login:</span>
-                <div className="demo-btns">
-                  <button
-                    type="button"
-                    onClick={() => handleQuickDemo("sarah.jenkins@example.org", "citizen")}
-                    className="demo-btn"
-                  >
-                    Citizen Demo
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleQuickDemo("director@stjudegeneral.org", "provider")}
-                    className="demo-btn"
-                  >
-                    Hospital Admin Demo
-                  </button>
+              <div className="quick-demo-strip flex-column align-items-stretch gap-2">
+                <span className="demo-label">
+                  <i className="bi bi-lightning-charge-fill text-warning me-1"></i>
+                  1-Click Role Demo Sign-In (Tests RBAC &amp; Command Portal):
+                </span>
+                <div className="demo-btns flex-wrap">
+                  {DEMO_ACCOUNTS.map((demo) => (
+                    <button
+                      key={demo.role}
+                      type="button"
+                      onClick={() => handleQuickDemo(demo)}
+                      className="demo-btn"
+                    >
+                      {demo.label}
+                    </button>
+                  ))}
                 </div>
               </div>
 
               {error && (
-                <div className="alert alert-danger py-2 small" role="alert">
+                <div className="alert alert-danger py-2 small mb-3" role="alert">
                   <i className="bi bi-exclamation-triangle-fill me-2"></i>
                   {error}
                 </div>
               )}
 
               <form onSubmit={handleSubmit} className="auth-form">
-                <div className="mb-3">
-                  <label className="form-label" htmlFor="emailInput">
-                    Email Address
-                  </label>
-                  <div className="input-group-auth">
-                    <i className="bi bi-envelope auth-field-icon"></i>
-                    <input
-                      id="emailInput"
-                      type="email"
-                      required
-                      placeholder="name@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="form-control"
-                    />
-                  </div>
-                </div>
+                <FormSelect
+                  id="roleSelect"
+                  label="Operational Role"
+                  icon="bi-person-badge"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  options={ROLE_OPTIONS}
+                />
 
-                <div className="mb-3">
-                  <div className="d-flex justify-content-between align-items-center">
-                    <label className="form-label mb-0" htmlFor="passwordInput">
-                      Password
-                    </label>
+                <FormInput
+                  id="emailInput"
+                  label="Email Address"
+                  type="email"
+                  required
+                  icon="bi-envelope"
+                  placeholder="name@hospital.gov.ng"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+
+                <FormInput
+                  id="passwordInput"
+                  label="Password"
+                  type="password"
+                  required
+                  icon="bi-lock"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  labelAction={
                     <a
                       href="#forgot"
                       onClick={(e) => {
                         e.preventDefault();
-                        alert("Password recovery link sent to your registered email address.");
+                        alert("Password reset instructions sent to your registered email.");
                       }}
                       className="forgot-link"
                     >
                       Forgot password?
                     </a>
-                  </div>
-                  <div className="input-group-auth">
-                    <i className="bi bi-lock auth-field-icon"></i>
-                    <input
-                      id="passwordInput"
-                      type={showPassword ? "text" : "password"}
-                      required
-                      placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="form-control"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="btn-toggle-password"
-                      aria-label={showPassword ? "Hide password" : "Show password"}
-                    >
-                      <i className={`bi ${showPassword ? "bi-eye-slash" : "bi-eye"}`}></i>
-                    </button>
-                  </div>
-                </div>
+                  }
+                />
 
-                <div className="form-check mb-4">
-                  <input type="checkbox" className="form-check-input" id="rememberMe" defaultChecked />
-                  <label className="form-check-label small" htmlFor="rememberMe">
-                    Keep me signed in on this device
-                  </label>
-                </div>
-
-                <button type="submit" className="button button-primary w-100" disabled={loading}>
+                <button type="submit" className="button button-primary w-100 mt-2" disabled={loading}>
                   {loading ? (
                     <>
                       <span className="spinner-border spinner-border-sm me-2" role="status"></span>
@@ -183,16 +202,16 @@ function SignIn() {
                     </>
                   ) : (
                     <>
-                      Sign In to PULSE360 <i className="bi bi-arrow-right ms-2"></i>
+                      Sign In <i className="bi bi-arrow-right ms-2"></i>
                     </>
                   )}
                 </button>
               </form>
 
               <div className="auth-footer-note">
-                Don't have an account yet?{" "}
+                Don&apos;t have an account yet?{" "}
                 <Link to="/signup" className="auth-switch-link">
-                  Create a community account
+                  Create an account
                 </Link>
               </div>
             </div>

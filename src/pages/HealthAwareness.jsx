@@ -219,7 +219,7 @@ function HealthAwareness() {
                   </div>
                   <div className="pch-call">
                     <i className="bi bi-telephone-fill me-1"></i>
-                    Always call dispatch: <strong>112 / 911</strong>
+                    Nigeria emergency dispatch: <strong>112</strong>
                   </div>
                 </div>
 

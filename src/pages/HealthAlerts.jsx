@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import Reveal from "../components/animations/Reveal";
+import { FormInput, FormSelect, FormCheckbox } from "../components/ui/FormComponents";
 import { getAlerts, subscribeToAlerts } from "../services/api";
 
 const SEVERITY_FILTERS = [
@@ -133,17 +134,17 @@ function HealthAlerts() {
         <div className="container strip-inner">
           <div className="hotline-title">
             <i className="bi bi-headset me-2"></i>
-            <strong>Emergency Health Hotlines (24/7 Toll-Free):</strong>
+            <strong>Nigeria Emergency &amp; Surveillance Hotlines (Toll-Free):</strong>
           </div>
           <div className="hotline-pills">
             <a href="tel:112" className="hotline-badge">
-              <span>National Dispatch:</span> <strong>112 / 911</strong>
+              <span>National Emergency:</span> <strong>112</strong>
             </a>
-            <a href="tel:18005557857" className="hotline-badge">
-              <span>Outbreak Taskforce:</span> <strong>1-800-555-PULSE</strong>
+            <a href="tel:6232" className="hotline-badge">
+              <span>NCDC Outbreak Line:</span> <strong>6232</strong>
             </a>
-            <a href="tel:18002221222" className="hotline-badge">
-              <span>Poison Control:</span> <strong>1-800-222-1222</strong>
+            <a href="tel:08001623322" className="hotline-badge">
+              <span>NAFDAC Safety:</span> <strong>0800-162-3322</strong>
             </a>
           </div>
         </div>
@@ -320,51 +321,50 @@ function HealthAlerts() {
                 </div>
               ) : (
                 <form onSubmit={handleSubscribeSubmit}>
-                  <div className="mb-3">
-                    <label className="form-label">Email Address *</label>
-                    <input
-                      type="email"
-                      required
-                      placeholder="name@example.com"
-                      value={subEmail}
-                      onChange={(e) => setSubEmail(e.target.value)}
-                      className="form-control"
-                    />
-                  </div>
+                  <FormInput
+                    id="subEmail"
+                    label="Email Address"
+                    type="email"
+                    required
+                    icon="bi-envelope"
+                    placeholder="name@example.ng"
+                    value={subEmail}
+                    onChange={(e) => setSubEmail(e.target.value)}
+                  />
 
-                  <div className="mb-3">
-                    <label className="form-label">Mobile Number for SMS Alerts (Optional)</label>
-                    <input
-                      type="tel"
-                      placeholder="+1 (555) 000-0000"
-                      value={subPhone}
-                      onChange={(e) => setSubPhone(e.target.value)}
-                      className="form-control"
-                    />
-                  </div>
+                  <FormInput
+                    id="subPhone"
+                    label="Mobile Number for SMS Alerts (Optional)"
+                    type="tel"
+                    icon="bi-telephone"
+                    placeholder="+234 803 000 0000"
+                    value={subPhone}
+                    onChange={(e) => setSubPhone(e.target.value)}
+                  />
 
-                  <div className="mb-3">
-                    <label className="form-label">Your Preferred Health Region</label>
-                    <select
-                      value={subRegion}
-                      onChange={(e) => setSubRegion(e.target.value)}
-                      className="form-select"
-                    >
-                      <option value="All Regions">All Regions (National Coverage)</option>
-                      <option value="Coastal Districts & Riverine Basin">Coastal Districts & Riverine Basin</option>
-                      <option value="Metropolitan Central & Suburban South">Metropolitan Central & Suburban South</option>
-                      <option value="Inland Valley & Central Industrial Corridor">Inland Valley & Central Industrial Corridor</option>
-                    </select>
-                  </div>
+                  <FormSelect
+                    id="subRegion"
+                    label="Your Preferred State / Zone"
+                    icon="bi-geo-alt"
+                    value={subRegion}
+                    onChange={(e) => setSubRegion(e.target.value)}
+                  >
+                    <option value="All States (Nigeria)">All 36 States &amp; FCT Abuja</option>
+                    <option value="Lagos State">Lagos State</option>
+                    <option value="FCT Abuja">FCT Abuja</option>
+                    <option value="Kano & North-West">Kano &amp; North-West Zone</option>
+                    <option value="Ondo / Edo Corridor">Ondo / Edo Corridor</option>
+                    <option value="Rivers & South-South">Rivers &amp; South-South Zone</option>
+                  </FormSelect>
 
-                  <div className="form-check mb-3">
-                    <input type="checkbox" required className="form-check-input" id="consentCheck" defaultChecked />
-                    <label className="form-check-label small" htmlFor="consentCheck">
-                      I agree to receive urgent public health notifications from PULSE360 and health authorities.
-                    </label>
-                  </div>
+                  <FormCheckbox
+                    id="consentCheck"
+                    required
+                    defaultChecked
+                    label="I agree to receive urgent public health notifications from PULSE360 and NCDC."
+                  />
 
-                  <div className="d-flex justify-content-end gap-2">
+                  <div className="modal-form-actions">
                     <button type="button" onClick={() => setShowSubModal(false)} className="button button-outline">
                       Cancel
                     </button>

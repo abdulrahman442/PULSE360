@@ -9,58 +9,58 @@ const services = [
     icon: "bi-hospital",
     title: "Healthcare Finder",
     description:
-      "Discover hospitals, emergency clinics, pharmacies, and diagnostic laboratories near you with verified operating hours.",
+      "Locate Teaching Hospitals, Primary Health Centres (PHCs), PCN pharmacies, and NHIA-accredited clinics by State and LGA.",
     color: "teal",
     href: "/find-healthcare",
     actionText: "Search Facilities",
   },
   {
     icon: "bi-bell",
-    title: "Health Alerts",
+    title: "NCDC & Health Alerts",
     description:
-      "Stay informed about public health advisories, seasonal disease outbreaks, pharmaceutical recalls, and emergency updates.",
+      "Track verified advisories on Cholera, Lassa Fever, Malaria, Diphtheria, and NAFDAC batch safety recalls across Nigeria.",
     color: "orange",
     href: "/alerts",
     actionText: "View Advisories",
   },
   {
-    icon: "bi-capsule",
-    title: "Medicines & Supplies",
+    icon: "bi-box-seam",
+    title: "Supply Chain & Logistics",
     description:
-      "Connect with accredited pharmaceutical suppliers, medical equipment distributors, and verified logistics partners.",
+      "Digitize facility stock requests, central medical store allocations, shipment tracking, and verified proof of delivery.",
     color: "blue",
-    href: "/register-company",
-    actionText: "Explore Suppliers",
+    href: "/pro/supply-chain",
+    actionText: "Open Command Portal",
   },
   {
     icon: "bi-heart-pulse",
-    title: "Health Education",
+    title: "Health Education & Map",
     description:
-      "Access certified public health guidance, interactive first aid protocols, and disease prevention education.",
+      "Browse Nigeria-focused disease prevention guides, first aid protocols, and the interactive State-by-State Health Map.",
     color: "purple",
-    href: "/awareness",
-    actionText: "Learn More",
+    href: "/health-map",
+    actionText: "Explore Health Map",
   },
 ];
 
 const steps = [
   {
     number: "01",
-    title: "Discover Facilities",
+    title: "Health Signal & Discovery",
     description:
-      "Find verified healthcare providers, 24/7 emergency rooms, and pharmacies suited to your immediate needs.",
+      "Citizens locate verified hospitals and PHCs across States and LGAs, while officers monitor NCDC alerts and facility indicators.",
   },
   {
     number: "02",
-    title: "Stay Informed",
+    title: "Request & Allocation",
     description:
-      "Receive real-time surveillance alerts, vector warnings, and clean water guidelines from public health authorities.",
+      "Facilities detect stock shortages and submit digital supply requests; Central Medical Stores review and allocate available stock.",
   },
   {
     number: "03",
-    title: "Take Decisive Action",
+    title: "Logistics & Coordinated Response",
     description:
-      "Use verified medical information to protect your loved ones, seek prompt care, and build resilient communities.",
+      "Logistics providers deliver supplies with digital Proof of Delivery while public health teams coordinate incident response tasks.",
   },
 ];
 
@@ -89,23 +89,23 @@ function Home() {
             <Reveal direction="down">
               <div className="eyebrow">
                 <span className="eyebrow-dot"></span>
-                HEALTHCARE. INFORMATION. CONNECTION.
+                NIGERIA PUBLIC HEALTH &amp; SUPPLY CHAIN PLATFORM
               </div>
             </Reveal>
 
             <Reveal delay={0.1}>
               <h1>
-                Better health
+                From health signals
                 <br />
-                starts with <span>access.</span>
+                to coordinated <span>action.</span>
               </h1>
             </Reveal>
 
             <Reveal delay={0.2}>
               <p className="hero-description">
-                Your connection to healthcare facilities, real-time public health
-                surveillance advisories, and essential medical resources—all through one
-                unified public health network.
+                Connecting Nigerian citizens, Primary Health Centres, teaching hospitals,
+                medical warehouses, and emergency response teams through one unified
+                public health &amp; medical supply-chain ecosystem.
               </p>
             </Reveal>
 
@@ -116,7 +116,7 @@ function Home() {
                   <i className="bi bi-search search-icon"></i>
                   <input
                     type="text"
-                    placeholder="Search hospitals, clinics, or specialties (e.g. Pediatrics, 24/7 Emergency)..."
+                    placeholder="Search Nigerian facilities, States, LGAs (e.g. LUTH, Abuja, Surulere, Pediatrics)..."
                     value={heroSearch}
                     onChange={(e) => setHeroSearch(e.target.value)}
                     className="hero-search-input"
@@ -132,13 +132,13 @@ function Home() {
             <Reveal delay={0.3}>
               <div className="hero-actions">
                 <Link to="/find-healthcare" className="button button-primary">
-                  Explore All Facilities
+                  Find Healthcare Near You
                   <i className="bi bi-arrow-right"></i>
                 </Link>
 
-                <Link to="/alerts" className="button button-outline">
-                  <i className="bi bi-bell-fill me-1 text-danger"></i>
-                  Active Alerts ({healthAlerts.length})
+                <Link to="/pro" className="button button-outline">
+                  <i className="bi bi-grid-1x2-fill me-1 text-primary"></i>
+                  Professional Command Portal
                 </Link>
               </div>
             </Reveal>
@@ -149,9 +149,9 @@ function Home() {
                   <i className="bi bi-shield-check"></i>
                 </span>
                 <p>
-                  <strong>Information that empowers.</strong>
+                  <strong>Nigeria-First Infrastructure · 36 States &amp; FCT.</strong>
                   <br />
-                  Connecting citizens, healthcare professionals, and response teams in real time.
+                  Free public health discovery for citizens; end-to-end supply &amp; incident coordination for organizations.
                 </p>
               </div>
             </Reveal>
@@ -164,7 +164,7 @@ function Home() {
             <div className="art-card">
               <div className="art-card-header">
                 <span className="art-status">
-                  <span></span> YOUR HEALTH, CONNECTED
+                  <span></span> NIGERIA ECOSYSTEM ACTIVE
                 </span>
                 <i className="bi bi-three-dots"></i>
               </div>
@@ -192,11 +192,11 @@ function Home() {
 
               <div className="art-card-footer">
                 <div>
-                  <span>ONE CONNECTED PLATFORM</span>
-                  <h3>Public health, simplified.</h3>
+                  <span>INTELLIGENCE · SUPPLY · RESPONSE</span>
+                  <h3>360° Public Health Layer</h3>
                 </div>
 
-                <Link to="/find-healthcare" className="art-arrow" aria-label="Find Healthcare">
+                <Link to="/health-map" className="art-arrow" aria-label="Explore Nigeria Health Map">
                   <i className="bi bi-arrow-up-right"></i>
                 </Link>
               </div>
@@ -207,8 +207,8 @@ function Home() {
                 <i className="bi bi-bell-fill"></i>
               </span>
               <span>
-                <strong>Public Alerts</strong>
-                <small>Real-time surveillance</small>
+                <strong>NCDC Alerts</strong>
+                <small>Dial 6232 / 112</small>
               </span>
             </div>
 
@@ -217,8 +217,8 @@ function Home() {
                 <i className="bi bi-hospital-fill"></i>
               </span>
               <span>
-                <strong>Healthcare Access</strong>
-                <small>Find verified facilities</small>
+                <strong>State &amp; LGA Network</strong>
+                <small>Hospitals, PHCs &amp; Depots</small>
               </span>
             </div>
           </div>
@@ -226,11 +226,11 @@ function Home() {
 
         <div className="hero-bottom">
           <div className="container hero-bottom-inner">
-            <span>DISCOVER RESOURCES</span>
+            <span>PROVIDE &amp; UNDERSTAND</span>
             <span className="bottom-line"></span>
-            <span>STAY INFORMED</span>
+            <span>LOCATE &amp; SUPPLY</span>
             <span className="bottom-line"></span>
-            <span>SUPPORT BETTER HEALTH</span>
+            <span>COORDINATE RESPONSE</span>
           </div>
         </div>
       </section>
@@ -240,8 +240,8 @@ function Home() {
         <div className="container">
           <div className="strip-header">
             <div className="strip-title-group">
-              <span className="section-eyebrow">DISEASE SURVEILLANCE & ADVISORIES</span>
-              <h2>Active Public Health Alerts</h2>
+              <span className="section-eyebrow">NCDC &amp; NAFDAC SURVEILLANCE</span>
+              <h2>Active Nigeria Public Health Alerts</h2>
             </div>
             <Link to="/alerts" className="strip-view-all">
               View All Advisories ({healthAlerts.length})
@@ -256,7 +256,7 @@ function Home() {
                   <span className={`severity-tag ${alert.severity}`}>
                     {alert.severity.toUpperCase()}
                   </span>
-                  <span className="alert-category">{alert.category}</span>
+                  <span className="alert-category">{alert.state} · {alert.category}</span>
                 </div>
                 <h3 className="alert-title">
                   <Link to={`/alerts/${alert.id}`}>{alert.title}</Link>
@@ -284,16 +284,16 @@ function Home() {
               <div>
                 <span className="section-eyebrow">EXPLORE PULSE360</span>
                 <h2>
-                  Healthcare resources,
+                  Public health &amp; supply chains,
                   <br />
                   <span className="heading-accent">connected.</span>
                 </h2>
               </div>
 
               <p>
-                Start with the information or service you need. PULSE360 brings
-                essential public health directories, verified supplies, and epidemiological
-                guidance together in one accessible space.
+                Built for Nigeria&apos;s health ecosystem: citizens discover care without friction,
+                while facilities, warehouses, logistics providers, and public health officers
+                coordinate inventory and outbreak response in real time.
               </p>
             </div>
           </Reveal>
@@ -332,55 +332,58 @@ function Home() {
             <div className="finder-mini-card finder-mini-top">
               <i className="bi bi-geo-alt-fill"></i>
               <span>
-                <strong>Healthcare Facilities</strong>
-                <small>Over 450+ verified locations</small>
+                <strong>State → LGA → Facility</strong>
+                <small>Teaching Hospitals, PHCs &amp; Labs</small>
               </span>
             </div>
 
             <div className="finder-mini-card finder-mini-bottom">
               <i className="bi bi-heart-pulse-fill"></i>
               <span>
-                <strong>24/7 Emergency Care</strong>
-                <small>Instant triage & routing</small>
+                <strong>NHIA &amp; HMO Ready</strong>
+                <small>Verify accepted schemes &amp; 24/7 ER</small>
               </span>
             </div>
           </div>
 
           <div className="finder-content">
             <Reveal>
-              <span className="section-eyebrow">HEALTHCARE ACCESS</span>
+              <span className="section-eyebrow">CITIZEN HEALTHCARE ACCESS</span>
 
               <h2>
-                Finding healthcare
+                Finding verified care in Nigeria
                 <br />
                 should be <span>simpler.</span>
               </h2>
 
               <p>
-                Discover general hospitals, specialized clinics, 24/7 urgent care
-                units, and pharmacies right in your neighborhood. Filter by accepted
-                health insurance, available trauma beds, and emergency status.
+                Filter by State and Local Government Area (LGA) to locate federal teaching
+                hospitals, Primary Health Centres (PHCs), PCN-accredited pharmacies, and
+                ISO diagnostic labs—no account required.
               </p>
 
               <ul className="check-list">
                 <li>
                   <i className="bi bi-check-circle-fill"></i>
-                  Discover verified 24/7 trauma & general hospital facilities
+                  Filter by State, LGA, facility tier, and 24/7 emergency availability
                 </li>
                 <li>
                   <i className="bi bi-check-circle-fill"></i>
-                  Search by specialty: Pediatrics, Cardiology, Maternity & Urgent Care
+                  Check NHIA, LASHMA (Ilera Eko), FHSS, and private HMO acceptance
                 </li>
                 <li>
                   <i className="bi bi-check-circle-fill"></i>
-                  Filter by accepted insurance and immediate bed capacity
+                  Direct access to 112 National Emergency and NCDC 6232 hotlines
                 </li>
               </ul>
 
-              <div className="finder-actions">
+              <div className="finder-actions d-flex flex-wrap gap-2">
                 <Link to="/find-healthcare" className="button button-primary">
                   Launch Healthcare Directory
                   <i className="bi bi-arrow-right"></i>
+                </Link>
+                <Link to="/health-map" className="button button-outline">
+                  <i className="bi bi-map me-1"></i> View Health Map
                 </Link>
               </div>
             </Reveal>
@@ -391,7 +394,7 @@ function Home() {
         <div className="container mt-5">
           <div className="featured-facilities-preview">
             <div className="featured-header">
-              <h4>Verified Regional Healthcare Centers</h4>
+              <h4>Verified Nigerian Healthcare Centres</h4>
               <Link to="/find-healthcare" className="link-subtle">
                 Browse full directory <i className="bi bi-chevron-right"></i>
               </Link>
@@ -400,7 +403,7 @@ function Home() {
               {featuredFacilities.map((facility) => (
                 <div key={facility.id} className="preview-facility-card">
                   <div className="pfc-top">
-                    <span className="pfc-type">{facility.type}</span>
+                    <span className="pfc-type">{facility.state} · {facility.lga} LGA</span>
                     {facility.isOpen24x7 && <span className="pfc-badge-247">24/7 OPEN</span>}
                   </div>
                   <h5>{facility.name}</h5>
@@ -412,7 +415,7 @@ function Home() {
                       <i className="bi bi-star-fill text-warning"></i> {facility.rating} ({facility.reviewCount})
                     </span>
                     <Link to={`/find-healthcare?id=${facility.id}`} className="pfc-btn">
-                      Details
+                      Profile
                     </Link>
                   </div>
                 </div>
@@ -422,33 +425,36 @@ function Home() {
         </div>
       </section>
 
-      {/* Health Awareness & Education Banner */}
-      <section className="section awareness-section" id="awareness">
+      {/* Professional Platform Operational Callout */}
+      <section className="section awareness-section" id="professional-platform">
         <div className="container awareness-panel">
           <div className="awareness-content">
             <Reveal>
               <span className="section-eyebrow light-eyebrow">
-                PUBLIC HEALTH AWARENESS
+                PROFESSIONAL COMMAND PLATFORM
               </span>
 
               <h2>
-                Stay informed.
+                Need → Request → Allocate
                 <br />
-                Stay prepared.
+                → Deliver → Verify.
               </h2>
 
               <p>
-                Access clinical guidance, interactive first aid protocols (CPR, Choking, Severe Bleeding), and preventative habits that save lives before emergency teams arrive.
+                Built for Hospital Supply Officers, State Medical Warehouses, Logistics
+                Providers, and NCDC Public Health Officers. Track inventory, prevent
+                stockouts, dispatch shipments with digital Proof of Delivery, and coordinate
+                incident response.
               </p>
 
               <div className="awareness-actions">
-                <Link to="/awareness" className="button button-white">
-                  Explore Health Knowledge Library
+                <Link to="/pro" className="button button-white">
+                  Launch Command Dashboard
                   <i className="bi bi-arrow-right"></i>
                 </Link>
-                <Link to="/awareness#first-aid" className="button button-transparent-light">
-                  <i className="bi bi-heart-pulse-fill me-1"></i>
-                  First Aid Protocols
+                <Link to="/signin" className="button button-transparent-light">
+                  <i className="bi bi-person-badge me-1"></i>
+                  Switch Role / Demo Login
                 </Link>
               </div>
             </Reveal>
@@ -461,21 +467,21 @@ function Home() {
             <div className="awareness-card">
               <div className="awareness-card-top">
                 <span className="awareness-card-icon">
-                  <i className="bi bi-megaphone-fill"></i>
+                  <i className="bi bi-truck"></i>
                 </span>
-                <span>HEALTH INFORMATION</span>
+                <span>END-TO-END TRACEABILITY</span>
               </div>
 
-              <h3>Knowledge supports prevention.</h3>
+              <h3>Zero blind spots in medical supply.</h3>
 
               <p>
-                Follow evidence-based guidelines verified by recognized public health
-                authorities and certified medical professionals.
+                Every supply request, warehouse allocation, shipment, and incident action
+                is tracked with role-based permissions and immutable audit logs.
               </p>
 
               <div className="awareness-card-footer">
                 <i className="bi bi-shield-check"></i>
-                <span>Awareness · Prevention · Preparedness</span>
+                <span>Inventory · Logistics · Incidents · Audit</span>
               </div>
             </div>
           </div>
@@ -491,36 +497,35 @@ function Home() {
 
           <div className="company-copy">
             <Reveal>
-              <span className="section-eyebrow">FOR ORGANISATIONS</span>
+              <span className="section-eyebrow">FOR NIGERIAN ORGANISATIONS</span>
 
               <h2>
-                Are you a healthcare provider
-                <br className="desktop-break" /> or medical supplier?
+                Register your hospital, PHC,
+                <br className="desktop-break" /> warehouse, or logistics fleet.
               </h2>
 
               <p>
-                Connect your hospital, clinic, pharmacy, or diagnostic laboratory to
-                PULSE360. Streamline patient discovery, broadcast service availability,
-                and collaborate with national public health networks.
+                Onboard your health facility, Central Medical Store, PCN pharmacy, or
+                medical logistics company into the PULSE360 multi-tenant ecosystem.
               </p>
 
               <div className="company-categories">
-                <span>Hospitals & clinics</span>
-                <span>Pharmacies</span>
-                <span>Medical suppliers</span>
-                <span>Diagnostic Labs</span>
+                <span>Teaching &amp; General Hospitals</span>
+                <span>Primary Health Centres</span>
+                <span>Medical Warehouses</span>
+                <span>Logistics Providers</span>
               </div>
             </Reveal>
           </div>
 
           <div className="company-actions">
             <Link to="/register-company" className="button button-primary">
-              Register Your Organisation
+              Register Organisation
               <i className="bi bi-arrow-right"></i>
             </Link>
 
             <Link to="/register-company#guidelines" className="company-learn">
-              Learn about verification
+              HEFAMAA / MDCN / PCN verification
             </Link>
           </div>
         </div>
@@ -531,17 +536,17 @@ function Home() {
         <div className="container">
           <Reveal>
             <div className="center-heading">
-              <span className="section-eyebrow">HOW IT WORKS</span>
+              <span className="section-eyebrow">CORE WORKFLOW</span>
 
               <h2>
-                A more connected approach
+                Connecting intelligence
                 <br />
-                to <span className="heading-accent">public health.</span>
+                to <span className="heading-accent">coordinated action.</span>
               </h2>
 
               <p>
-                PULSE360 aims to make healthcare facilities, epidemiological intelligence,
-                and emergency resources easier to discover, verify, and use.
+                PULSE360 bridges public health visibility with medical supply-chain
+                execution across Nigeria.
               </p>
             </div>
           </Reveal>
@@ -565,20 +570,20 @@ function Home() {
         <div className="container get-started-content">
           <div>
             <span className="section-eyebrow light-eyebrow">
-              YOUR CONNECTION TO BETTER HEALTH
+              HEALTHCARE INFRASTRUCTURE FOR NIGERIA
             </span>
 
             <h2>
-              Let's build healthier,
+              Ready to explore the platform
               <br />
-              better-informed communities.
+              or command operations?
             </h2>
           </div>
 
           <div className="get-started-btns">
-            <Link to="/signup" className="button button-white">
-              Create Free Account
-              <i className="bi bi-person-plus-fill ms-2"></i>
+            <Link to="/pro" className="button button-white">
+              Open Command Portal
+              <i className="bi bi-grid-1x2-fill ms-2"></i>
             </Link>
             <Link to="/find-healthcare" className="button button-outline-light">
               Find Facilities Near You

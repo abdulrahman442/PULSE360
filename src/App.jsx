@@ -1,13 +1,24 @@
 import { BrowserRouter, Routes, Route, Navigate, Link } from "react-router-dom";
 import AppLayout from "./layouts/AppLayout";
+import ProLayout from "./layouts/ProLayout";
 import Home from "./pages/Home";
 import HealthcareFinder from "./pages/HealthcareFinder";
+import HealthMap from "./pages/HealthMap";
 import HealthAlerts from "./pages/HealthAlerts";
 import AlertDetails from "./pages/AlertDetails";
 import HealthAwareness from "./pages/HealthAwareness";
+import EmergencyInfo from "./pages/EmergencyInfo";
 import CompanyRegistration from "./pages/CompanyRegistration";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
+
+// Professional Operations Platform
+import ProDashboard from "./pages/pro/ProDashboard";
+import ProIntelligence from "./pages/pro/ProIntelligence";
+import ProIncidents from "./pages/pro/ProIncidents";
+import ProSupplyChain from "./pages/pro/ProSupplyChain";
+import ProLogistics from "./pages/pro/ProLogistics";
+import ProAdmin from "./pages/pro/ProAdmin";
 
 function NotFound() {
   return (
@@ -18,7 +29,7 @@ function NotFound() {
         <p className="lead text-muted max-w-500 mx-auto">
           The public health resource or page you requested could not be located.
         </p>
-        <div className="d-flex justify-content-center gap-3 mt-4">
+        <div className="d-flex justify-content-center gap-3 mt-4 flex-wrap">
           <Link to="/" className="button button-primary">
             <i className="bi bi-house-door-fill me-2"></i>
             Return to Homepage
@@ -36,36 +47,36 @@ function NotFound() {
 function App() {
   return (
     <BrowserRouter>
-      <AppLayout>
-        <Routes>
-          {/* Main Landing Page */}
+      <Routes>
+        {/* PUBLIC PLATFORM ROUTES */}
+        <Route element={<AppLayout />}>
           <Route path="/" element={<Home />} />
-
-          {/* Healthcare Finder */}
           <Route path="/find-healthcare" element={<HealthcareFinder />} />
           <Route path="/healthcare" element={<Navigate to="/find-healthcare" replace />} />
-
-          {/* Epidemiological & Public Health Alerts */}
+          <Route path="/health-map" element={<HealthMap />} />
           <Route path="/alerts" element={<HealthAlerts />} />
           <Route path="/health-alerts" element={<Navigate to="/alerts" replace />} />
           <Route path="/alerts/:id" element={<AlertDetails />} />
-
-          {/* Health Education & Awareness */}
           <Route path="/awareness" element={<HealthAwareness />} />
           <Route path="/health-awareness" element={<Navigate to="/awareness" replace />} />
-
-          {/* For Organisations & Providers */}
+          <Route path="/emergency" element={<EmergencyInfo />} />
           <Route path="/register-company" element={<CompanyRegistration />} />
           <Route path="/companies" element={<Navigate to="/register-company" replace />} />
-
-          {/* Authentication */}
           <Route path="/signin" element={<SignIn />} />
           <Route path="/signup" element={<SignUp />} />
-
-          {/* Fallback 404 Route */}
           <Route path="*" element={<NotFound />} />
-        </Routes>
-      </AppLayout>
+        </Route>
+
+        {/* PROFESSIONAL COMMAND PLATFORM ROUTES */}
+        <Route path="/pro" element={<ProLayout />}>
+          <Route index element={<ProDashboard />} />
+          <Route path="intelligence" element={<ProIntelligence />} />
+          <Route path="incidents" element={<ProIncidents />} />
+          <Route path="supply-chain" element={<ProSupplyChain />} />
+          <Route path="logistics" element={<ProLogistics />} />
+          <Route path="admin" element={<ProAdmin />} />
+        </Route>
+      </Routes>
     </BrowserRouter>
   );
 }

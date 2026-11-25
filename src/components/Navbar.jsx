@@ -8,7 +8,6 @@ function Navbar() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Listen for custom storage events or re-renders
     const handleAuthChange = () => {
       setUser(getCurrentUser());
     };
@@ -34,26 +33,26 @@ function Navbar() {
 
   return (
     <header className="pulse-navbar-wrapper">
-      {/* Top Emergency / Hotline Bar */}
+      {/* Top Nigeria Emergency / Hotline Bar */}
       <div className="pulse-topbar">
         <div className="container pulse-topbar-inner">
           <div className="topbar-left">
             <span className="emergency-badge">
-              <i className="bi bi-broadcast"></i> LIVE SURVEILLANCE
+              <i className="bi bi-broadcast"></i> NIGERIA HEALTH NETWORK
             </span>
             <span className="topbar-text">
-              Active Health Vigilance: Coastal Water Safety & Vector Control Protocols
+              From health signals to coordinated action · 36 States &amp; FCT Abuja
             </span>
           </div>
           <div className="topbar-right">
             <a href="tel:112" className="hotline-link">
               <i className="bi bi-telephone-fill"></i>
-              <span>Emergency: <strong>112 / 911</strong></span>
+              <span>Nigeria Emergency: <strong>112</strong></span>
             </a>
             <span className="topbar-divider">|</span>
-            <a href="tel:18005557857" className="hotline-link">
-              <i className="bi bi-headset"></i>
-              <span>Toll-Free Healthline: <strong>1-800-555-PULSE</strong></span>
+            <a href="tel:6232" className="hotline-link">
+              <i className="bi bi-shield-exclamation"></i>
+              <span>NCDC Outbreak Line: <strong>6232</strong></span>
             </a>
           </div>
         </div>
@@ -62,7 +61,6 @@ function Navbar() {
       {/* Main Navbar */}
       <nav className="navbar navbar-expand-lg pulse-navbar">
         <div className="container">
-          {/* Brand */}
           <Link to="/" className="navbar-brand brand" onClick={closeMenu}>
             <span className="brand-mark">
               <i className="bi bi-heart-pulse-fill" aria-hidden="true"></i>
@@ -71,11 +69,10 @@ function Navbar() {
               <span className="brand-name">
                 PULSE<span>360</span>
               </span>
-              <span className="brand-caption">PUBLIC HEALTH NETWORK</span>
+              <span className="brand-caption">NIGERIA PUBLIC HEALTH</span>
             </span>
           </Link>
 
-          {/* Mobile hamburger button */}
           <button
             className={`navbar-toggler ${menuOpen ? "is-open" : ""}`}
             type="button"
@@ -90,7 +87,6 @@ function Navbar() {
             </span>
           </button>
 
-          {/* Navigation links & Actions */}
           <div className={`collapse navbar-collapse ${menuOpen ? "show" : ""}`} id="pulseNavbarMenu">
             <ul className="navbar-nav mx-auto">
               <li className="nav-item">
@@ -117,13 +113,24 @@ function Navbar() {
 
               <li className="nav-item">
                 <NavLink
+                  to="/health-map"
+                  className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
+                  onClick={closeMenu}
+                >
+                  <i className="bi bi-map me-1"></i>
+                  Health Map
+                </NavLink>
+              </li>
+
+              <li className="nav-item">
+                <NavLink
                   to="/alerts"
                   className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
                   onClick={closeMenu}
                 >
                   <i className="bi bi-bell me-1"></i>
-                  Health Alerts
-                  <span className="nav-pulse-dot" title="Active advisories in effect"></span>
+                  Alerts
+                  <span className="nav-pulse-dot" title="Active NCDC advisories"></span>
                 </NavLink>
               </li>
 
@@ -134,31 +141,40 @@ function Navbar() {
                   onClick={closeMenu}
                 >
                   <i className="bi bi-shield-check me-1"></i>
-                  Health Awareness
+                  Health Info
                 </NavLink>
               </li>
 
               <li className="nav-item">
                 <NavLink
-                  to="/register-company"
+                  to="/emergency"
                   className={({ isActive }) => `nav-link ${isActive ? "active" : ""}`}
                   onClick={closeMenu}
                 >
-                  <i className="bi bi-buildings me-1"></i>
-                  For Providers
+                  <i className="bi bi-telephone-plus me-1 text-danger"></i>
+                  Emergency
                 </NavLink>
               </li>
             </ul>
 
-            {/* Authentication / User session section */}
             <div className="navbar-actions">
+              <Link
+                to="/pro"
+                className="btn-pro-portal"
+                onClick={closeMenu}
+                title="Open Professional Operations & Supply Chain Command"
+              >
+                <i className="bi bi-grid-1x2-fill me-1"></i>
+                Command Portal
+              </Link>
+
               {user ? (
                 <div className="user-nav-dropdown">
                   <div className="user-profile-badge">
                     <img src={user.avatar} alt={user.name} className="user-nav-avatar" />
                     <div className="user-nav-details">
                       <span className="user-nav-name">{user.name}</span>
-                      <span className="user-nav-role">{user.role || "Member"}</span>
+                      <span className="user-nav-role">{user.roleLabel || user.role || "Member"}</span>
                     </div>
                   </div>
                   <button

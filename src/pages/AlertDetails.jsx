@@ -182,7 +182,7 @@ function AlertDetails() {
                 <p>{alert.whenToSeekCare}</p>
                 <div className="emergency-dispatch-note">
                   <i className="bi bi-telephone-fill me-1"></i>
-                  Emergency dispatch line: <strong>112 / 911</strong> (Toll-Free, 24/7)
+                  Nigeria emergency dispatch: <strong>112</strong> · NCDC Surveillance Line: <strong>6232</strong> (Toll-Free, 24/7)
                 </div>
               </div>
             )}

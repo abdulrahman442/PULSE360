@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import Reveal from "../components/animations/Reveal";
+import { FormInput, FormSelect, FormCheckbox, FormRow } from "../components/ui/FormComponents";
 import { registerCompany } from "../services/api";
+import { NIGERIA_STATES } from "../data/nigeriaGeo";
 
 const FACILITY_TYPES = [
   "Hospital",
@@ -9,41 +11,43 @@ const FACILITY_TYPES = [
   "Emergency",
   "Pharmacy",
   "Diagnostic",
+  "Warehouse / Medical Store",
+  "Logistics Provider",
   "Medical Supplier",
-  "Pharmaceutical Distributor",
 ];
 
 const AVAILABLE_SERVICES = [
-  "24/7 Trauma Emergency",
+  "24/7 Accident & Emergency",
   "Intensive Care Unit (ICU)",
   "Pediatrics & Child Health",
   "Maternity & Obstetrics",
-  "Cardiology & Catheterization",
+  "Routine Immunization (NPHCDA)",
   "Radiology (CT, MRI, Ultrasound)",
   "Clinical Pathology & PCR Testing",
-  "General & Laparoscopic Surgery",
-  "In-House Pharmacy & Compounding",
+  "Oral Rehydration Therapy (ORT)",
+  "PCN In-House Pharmacy",
   "Dialysis & Nephrology",
-  "Psychiatric & Mental Health",
-  "Ambulance & Critical Transport",
-  "Durable Medical Equipment (Oxygen, Mobility)",
-  "Vaccination Center",
+  "Infectious Disease Isolation",
+  "Ambulance & Cold-Chain Transport",
+  "Medical Oxygen & Equipment",
 ];
 
 function CompanyRegistration() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submittedResult, setSubmittedResult] = useState(null);
+  const [certified, setCertified] = useState(true);
 
   const [formData, setFormData] = useState({
     name: "",
     licenseNumber: "",
     type: "Hospital",
-    category: "General & Teaching Hospital",
+    category: "General & Specialist Hospital",
     yearEstablished: "2015",
     address: "",
-    city: "Metro Central",
-    state: "State Capital",
+    city: "Lagos",
+    lga: "Ikeja",
+    state: "Lagos",
     phone: "",
     emergencyPhone: "",
     email: "",
@@ -51,11 +55,11 @@ function CompanyRegistration() {
     hours: "24/7 Always Open",
     isOpen24x7: true,
     bedsAvailable: 25,
-    services: ["24/7 Trauma Emergency", "Pediatrics & Child Health", "In-House Pharmacy & Compounding"],
+    services: ["24/7 Accident & Emergency", "Pediatrics & Child Health", "PCN In-House Pharmacy"],
     insuranceAccepted: true,
-    insuranceProviders: "Blue Cross, Aetna, UnitedHealth, State Medicaid",
+    insuranceProviders: "NHIA, LASHMA (Ilera Eko), Hygeia HMO, AXA Mansard",
     representativeName: "",
-    representativeTitle: "Medical Director",
+    representativeTitle: "Chief Medical Director (CMD)",
     representativeEmail: "",
     representativePhone: "",
   });
@@ -97,7 +101,7 @@ function CompanyRegistration() {
     try {
       const insuranceList = formData.insuranceProviders
         ? formData.insuranceProviders.split(",").map((s) => s.trim())
-        : ["All Major Networks"];
+        : ["NHIA"];
 
       const payload = {
         ...formData,
@@ -116,37 +120,41 @@ function CompanyRegistration() {
     }
   };
 
+  const selectedStateLgas =
+    NIGERIA_STATES.find((s) => s.name === formData.state)?.lgas.map((l) => ({
+      value: l,
+      label: `${l} LGA`,
+    })) || [];
+
   return (
     <div className="company-reg-page">
-      {/* Banner */}
       <section className="reg-header-banner">
         <div className="container">
           <Reveal>
             <div className="reg-header-meta">
-              <span className="section-eyebrow">HEALTHCARE PROVIDER & SUPPLIER NETWORK</span>
+              <span className="section-eyebrow">NIGERIA HEALTHCARE PROVIDER &amp; SUPPLIER NETWORK</span>
               <h1>Register Your Organisation</h1>
               <p className="page-lead">
-                Connect your hospital, diagnostic clinic, pharmacy, or medical supply
-                enterprise to the national PULSE360 public health network.
+                Connect your hospital, Primary Health Centre, PCN pharmacy, Central Medical Store,
+                or logistics fleet to the PULSE360 Nigeria ecosystem.
               </p>
             </div>
           </Reveal>
 
-          {/* Value Props Row */}
           <div className="reg-benefits-grid">
             <div className="benefit-card">
               <i className="bi bi-geo-alt-fill text-primary"></i>
               <div>
-                <strong>Public Discovery</strong>
-                <p>Connect with citizens seeking verified care in your district.</p>
+                <strong>State &amp; LGA Discovery</strong>
+                <p>Connect with citizens seeking verified care in your LGA.</p>
               </div>
             </div>
 
             <div className="benefit-card">
               <i className="bi bi-broadcast text-danger"></i>
               <div>
-                <strong>Surveillance Integration</strong>
-                <p>Receive rapid alerts and report disease cluster surveillance.</p>
+                <strong>NCDC Surveillance</strong>
+                <p>Receive rapid alerts and coordinate incident response.</p>
               </div>
             </div>
 
@@ -154,33 +162,31 @@ function CompanyRegistration() {
               <i className="bi bi-patch-check-fill text-info"></i>
               <div>
                 <strong>Verified Credential</strong>
-                <p>Earn official verification badge on the public directory.</p>
+                <p>Earn HEFAMAA / MDCN / PCN verification badge.</p>
               </div>
             </div>
 
             <div className="benefit-card">
               <i className="bi bi-truck text-success"></i>
               <div>
-                <strong>Medical Supply Network</strong>
-                <p>Coordinate emergency pharmaceuticals and equipment logistics.</p>
+                <strong>Supply Chain Network</strong>
+                <p>Request medical stock &amp; verify last-mile deliveries.</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Main Registration Form Section */}
       <section className="reg-form-section py-5">
         <div className="container max-w-900">
           {submittedResult ? (
-            /* Success Card */
             <div className="reg-success-card animate-fade-in">
               <div className="success-icon-badge">
                 <i className="bi bi-check-lg"></i>
               </div>
               <h2>Organisation Registration Submitted!</h2>
               <p className="success-lead">
-                Thank you for onboarding <strong>{submittedResult.name}</strong> to PULSE360.
+                Thank you for onboarding <strong>{submittedResult.name}</strong> to PULSE360 Nigeria.
               </p>
 
               <div className="submission-summary-box">
@@ -194,7 +200,7 @@ function CompanyRegistration() {
                 </div>
                 <div className="summary-row">
                   <span>Location:</span>
-                  <strong>{submittedResult.address}, {submittedResult.city}</strong>
+                  <strong>{submittedResult.address}, {submittedResult.lga} LGA, {submittedResult.state}</strong>
                 </div>
                 <div className="summary-row">
                   <span>Primary Representative:</span>
@@ -203,7 +209,7 @@ function CompanyRegistration() {
                 <div className="summary-row">
                   <span>Verification Status:</span>
                   <span className="badge-verified-preview">
-                    <i className="bi bi-patch-check-fill me-1"></i> Active in Local Registry
+                    <i className="bi bi-patch-check-fill me-1"></i> Active in Registry
                   </span>
                 </div>
               </div>
@@ -211,13 +217,13 @@ function CompanyRegistration() {
               <div className="next-steps-info">
                 <h4>What Happens Next?</h4>
                 <ol>
-                  <li>Our public health credentialing desk verifies your operating license within 24 to 48 hours.</li>
-                  <li>Your verified provider badge will appear across the healthcare directory.</li>
-                  <li>You will receive an automated onboarding email with administrative dashboard credentials.</li>
+                  <li>Our credentialing desk verifies your MDCN / PCN / HEFAMAA operating license within 24–48 hours.</li>
+                  <li>Your verified facility appears across the Healthcare Finder and Nigeria Health Map.</li>
+                  <li>Your team gains access to the Professional Command Portal for supply requests and inventory.</li>
                 </ol>
               </div>
 
-              <div className="success-actions">
+              <div className="success-actions justify-content-center">
                 <Link to="/find-healthcare" className="button button-primary">
                   <i className="bi bi-search me-2"></i>
                   View in Healthcare Directory
@@ -234,9 +240,7 @@ function CompanyRegistration() {
               </div>
             </div>
           ) : (
-            /* Multi-step Form */
             <div className="reg-card">
-              {/* Stepper Header */}
               <div className="reg-stepper">
                 <div className={`step-node ${currentStep >= 1 ? "active" : ""}`}>
                   <div className="step-circle">1</div>
@@ -262,76 +266,63 @@ function CompanyRegistration() {
                 </div>
               </div>
 
-              {/* Step 1: Organisation Profile */}
               {currentStep === 1 && (
                 <form onSubmit={handleNext} className="reg-step-form">
-                  <h3>Step 1: Organisation Profile & Identity</h3>
-                  <p className="text-muted small">Enter your healthcare or medical supply entity details.</p>
+                  <h3>Step 1: Organisation Profile &amp; Identity</h3>
+                  <p className="text-muted small mb-4">Enter your Nigerian healthcare, warehouse, or logistics entity details.</p>
 
-                  <div className="mb-3">
-                    <label className="form-label">Official Organisation Name *</label>
-                    <input
-                      type="text"
+                  <FormInput
+                    id="orgName"
+                    label="Official Organisation Name"
+                    required
+                    icon="bi-building"
+                    placeholder="e.g. Ikeja General & Specialist Hospital"
+                    value={formData.name}
+                    onChange={(e) => handleInputChange("name", e.target.value)}
+                  />
+
+                  <FormRow>
+                    <FormSelect
+                      id="orgType"
+                      label="Facility Classification"
                       required
-                      placeholder="e.g. St. Luke Specialized Memorial Hospital"
-                      value={formData.name}
-                      onChange={(e) => handleInputChange("name", e.target.value)}
-                      className="form-control"
+                      icon="bi-hospital"
+                      value={formData.type}
+                      onChange={(e) => handleInputChange("type", e.target.value)}
+                      options={FACILITY_TYPES}
                     />
-                  </div>
 
-                  <div className="row g-3 mb-3">
-                    <div className="col-md-6">
-                      <label className="form-label">Facility Classification *</label>
-                      <select
-                        value={formData.type}
-                        onChange={(e) => handleInputChange("type", e.target.value)}
-                        className="form-select"
-                      >
-                        {FACILITY_TYPES.map((t) => (
-                          <option key={t} value={t}>
-                            {t}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    <FormInput
+                      id="orgLicense"
+                      label="FMoH / HEFAMAA / PCN License No."
+                      required
+                      icon="bi-file-earmark-check"
+                      placeholder="e.g. HEFAMAA-LAG-2026-981"
+                      value={formData.licenseNumber}
+                      onChange={(e) => handleInputChange("licenseNumber", e.target.value)}
+                    />
+                  </FormRow>
 
-                    <div className="col-md-6">
-                      <label className="form-label">Ministry / State License Number *</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. MOH-HOSP-2026-9812"
-                        value={formData.licenseNumber}
-                        onChange={(e) => handleInputChange("licenseNumber", e.target.value)}
-                        className="form-control"
-                      />
-                    </div>
-                  </div>
+                  <FormRow>
+                    <FormInput
+                      id="orgCategory"
+                      label="Category Description"
+                      icon="bi-tag"
+                      placeholder="e.g. Tertiary Teaching Hospital"
+                      value={formData.category}
+                      onChange={(e) => handleInputChange("category", e.target.value)}
+                    />
 
-                  <div className="row g-3 mb-3">
-                    <div className="col-md-6">
-                      <label className="form-label">Category Description</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. Multi-Specialty Tertiary Hospital"
-                        value={formData.category}
-                        onChange={(e) => handleInputChange("category", e.target.value)}
-                        className="form-control"
-                      />
-                    </div>
-
-                    <div className="col-md-6">
-                      <label className="form-label">Year Established</label>
-                      <input
-                        type="number"
-                        placeholder="2010"
-                        value={formData.yearEstablished}
-                        onChange={(e) => handleInputChange("yearEstablished", e.target.value)}
-                        className="form-control"
-                      />
-                    </div>
-                  </div>
+                    <FormInput
+                      id="orgYear"
+                      label="Year Established"
+                      type="number"
+                      icon="bi-calendar3"
+                      placeholder="2015"
+                      value={formData.yearEstablished}
+                      onChange={(e) => handleInputChange("yearEstablished", e.target.value)}
+                    />
+                  </FormRow>
 
                   <div className="form-actions-row">
                     <span></span>
@@ -342,97 +333,94 @@ function CompanyRegistration() {
                 </form>
               )}
 
-              {/* Step 2: Location & Contact */}
               {currentStep === 2 && (
                 <form onSubmit={handleNext} className="reg-step-form">
-                  <h3>Step 2: Location & Contact Channels</h3>
-                  <p className="text-muted small">Help citizens and emergency responders locate your facilities.</p>
+                  <h3>Step 2: Location &amp; Contact Channels</h3>
+                  <p className="text-muted small mb-4">Help Nigerian citizens and dispatchers locate your facility by State and LGA.</p>
 
-                  <div className="mb-3">
-                    <label className="form-label">Physical Street Address *</label>
-                    <input
-                      type="text"
+                  <FormInput
+                    id="orgAddress"
+                    label="Physical Street Address"
+                    required
+                    icon="bi-geo-alt"
+                    placeholder="e.g. 24 Oba Akran Avenue, Ikeja"
+                    value={formData.address}
+                    onChange={(e) => handleInputChange("address", e.target.value)}
+                  />
+
+                  <FormRow>
+                    <FormSelect
+                      id="orgState"
+                      label="State (Nigeria)"
                       required
-                      placeholder="e.g. 742 Evergreen Boulevard, Suite 100"
-                      value={formData.address}
-                      onChange={(e) => handleInputChange("address", e.target.value)}
-                      className="form-control"
+                      icon="bi-map"
+                      value={formData.state}
+                      onChange={(e) => {
+                        const st = e.target.value;
+                        const stObj = NIGERIA_STATES.find((s) => s.name === st);
+                        handleInputChange("state", st);
+                        handleInputChange("city", stObj?.capital || st);
+                        handleInputChange("lga", stObj?.lgas[0] || "");
+                      }}
+                      options={NIGERIA_STATES.map((s) => s.name)}
                     />
-                  </div>
 
-                  <div className="row g-3 mb-3">
-                    <div className="col-md-6">
-                      <label className="form-label">Municipality / City *</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="e.g. Metro Central"
-                        value={formData.city}
-                        onChange={(e) => handleInputChange("city", e.target.value)}
-                        className="form-control"
-                      />
-                    </div>
+                    <FormSelect
+                      id="orgLga"
+                      label="Local Government Area (LGA)"
+                      required
+                      icon="bi-pin-map"
+                      value={formData.lga}
+                      onChange={(e) => handleInputChange("lga", e.target.value)}
+                      options={selectedStateLgas}
+                    />
+                  </FormRow>
 
-                    <div className="col-md-6">
-                      <label className="form-label">State / Province</label>
-                      <input
-                        type="text"
-                        value={formData.state}
-                        onChange={(e) => handleInputChange("state", e.target.value)}
-                        className="form-control"
-                      />
-                    </div>
-                  </div>
+                  <FormRow>
+                    <FormInput
+                      id="orgPhone"
+                      label="General Contact Phone"
+                      type="tel"
+                      required
+                      icon="bi-telephone"
+                      placeholder="+234 803 000 0000"
+                      value={formData.phone}
+                      onChange={(e) => handleInputChange("phone", e.target.value)}
+                    />
 
-                  <div className="row g-3 mb-3">
-                    <div className="col-md-6">
-                      <label className="form-label">General Contact Phone *</label>
-                      <input
-                        type="tel"
-                        required
-                        placeholder="+1 (555) 000-0000"
-                        value={formData.phone}
-                        onChange={(e) => handleInputChange("phone", e.target.value)}
-                        className="form-control"
-                      />
-                    </div>
+                    <FormInput
+                      id="orgEmergencyPhone"
+                      label="Emergency Desk Line (24/7)"
+                      type="tel"
+                      icon="bi-lightning-charge"
+                      placeholder="+234 800 112 0000"
+                      value={formData.emergencyPhone}
+                      onChange={(e) => handleInputChange("emergencyPhone", e.target.value)}
+                    />
+                  </FormRow>
 
-                    <div className="col-md-6">
-                      <label className="form-label">Emergency Desk Line (24/7)</label>
-                      <input
-                        type="tel"
-                        placeholder="+1 (555) 911-0000"
-                        value={formData.emergencyPhone}
-                        onChange={(e) => handleInputChange("emergencyPhone", e.target.value)}
-                        className="form-control"
-                      />
-                    </div>
-                  </div>
+                  <FormRow>
+                    <FormInput
+                      id="orgEmail"
+                      label="Official Facility Email"
+                      type="email"
+                      required
+                      icon="bi-envelope"
+                      placeholder="info@facility.gov.ng"
+                      value={formData.email}
+                      onChange={(e) => handleInputChange("email", e.target.value)}
+                    />
 
-                  <div className="row g-3 mb-3">
-                    <div className="col-md-6">
-                      <label className="form-label">Official Facility Email *</label>
-                      <input
-                        type="email"
-                        required
-                        placeholder="info@facility.org"
-                        value={formData.email}
-                        onChange={(e) => handleInputChange("email", e.target.value)}
-                        className="form-control"
-                      />
-                    </div>
-
-                    <div className="col-md-6">
-                      <label className="form-label">Website URL</label>
-                      <input
-                        type="url"
-                        placeholder="https://www.facility.org"
-                        value={formData.website}
-                        onChange={(e) => handleInputChange("website", e.target.value)}
-                        className="form-control"
-                      />
-                    </div>
-                  </div>
+                    <FormInput
+                      id="orgWebsite"
+                      label="Website URL"
+                      type="url"
+                      icon="bi-globe"
+                      placeholder="https://www.facility.org.ng"
+                      value={formData.website}
+                      onChange={(e) => handleInputChange("website", e.target.value)}
+                    />
+                  </FormRow>
 
                   <div className="form-actions-row">
                     <button type="button" onClick={handleBack} className="button button-outline">
@@ -445,53 +433,41 @@ function CompanyRegistration() {
                 </form>
               )}
 
-              {/* Step 3: Clinical Services & Capacity */}
               {currentStep === 3 && (
                 <form onSubmit={handleNext} className="reg-step-form">
-                  <h3>Step 3: Clinical Capacity & Services Offered</h3>
-                  <p className="text-muted small">Specify available specialties, beds, and operating hours.</p>
+                  <h3>Step 3: Clinical Capacity &amp; Services Offered</h3>
+                  <p className="text-muted small mb-4">Specify available specialties, bed capacity, and NHIA/HMO coverage.</p>
 
-                  <div className="row g-3 mb-3">
-                    <div className="col-md-6">
-                      <label className="form-label">Operating Schedule</label>
-                      <input
-                        type="text"
-                        placeholder="e.g. 24/7 Always Open OR Mon-Sat 8am-8pm"
-                        value={formData.hours}
-                        onChange={(e) => handleInputChange("hours", e.target.value)}
-                        className="form-control"
-                      />
-                    </div>
+                  <FormRow>
+                    <FormInput
+                      id="orgHours"
+                      label="Operating Schedule"
+                      icon="bi-clock"
+                      placeholder="e.g. 24/7 Always Open"
+                      value={formData.hours}
+                      onChange={(e) => handleInputChange("hours", e.target.value)}
+                    />
 
-                    <div className="col-md-6">
-                      <label className="form-label">Available Inpatient Beds / Capacity</label>
-                      <input
-                        type="number"
-                        placeholder="e.g. 35"
-                        value={formData.bedsAvailable}
-                        onChange={(e) => handleInputChange("bedsAvailable", e.target.value)}
-                        className="form-control"
-                      />
-                    </div>
-                  </div>
+                    <FormInput
+                      id="orgBeds"
+                      label="Available Inpatient Beds / Capacity"
+                      type="number"
+                      icon="bi-hospital"
+                      placeholder="e.g. 35"
+                      value={formData.bedsAvailable}
+                      onChange={(e) => handleInputChange("bedsAvailable", e.target.value)}
+                    />
+                  </FormRow>
 
-                  <div className="mb-3">
-                    <div className="form-check form-switch">
-                      <input
-                        type="checkbox"
-                        className="form-check-input"
-                        id="open247Switch"
-                        checked={formData.isOpen24x7}
-                        onChange={(e) => handleInputChange("isOpen24x7", e.target.checked)}
-                      />
-                      <label className="form-check-label fw-bold" htmlFor="open247Switch">
-                        Facility Operates 24 Hours / 7 Days a Week
-                      </label>
-                    </div>
-                  </div>
+                  <FormCheckbox
+                    id="open247Switch"
+                    checked={formData.isOpen24x7}
+                    onChange={(e) => handleInputChange("isOpen24x7", e.target.checked)}
+                    label="Facility Operates 24 Hours / 7 Days a Week"
+                  />
 
-                  <div className="mb-3">
-                    <label className="form-label fw-bold">Select Available Services & Specialties</label>
+                  <div className="pulse-form-field">
+                    <label className="pulse-form-label mb-2">Select Available Services &amp; Specialties</label>
                     <div className="services-selection-grid">
                       {AVAILABLE_SERVICES.map((s) => {
                         const checked = formData.services.includes(s);
@@ -509,16 +485,14 @@ function CompanyRegistration() {
                     </div>
                   </div>
 
-                  <div className="mb-3">
-                    <label className="form-label">Accepted Health Insurance Networks (comma separated)</label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Blue Cross, Aetna, UnitedHealth, State Medicaid"
-                      value={formData.insuranceProviders}
-                      onChange={(e) => handleInputChange("insuranceProviders", e.target.value)}
-                      className="form-control"
-                    />
-                  </div>
+                  <FormInput
+                    id="orgInsurance"
+                    label="Accepted NHIA &amp; HMO Networks (comma separated)"
+                    icon="bi-shield-check"
+                    placeholder="NHIA, LASHMA, Hygeia HMO, AXA Mansard"
+                    value={formData.insuranceProviders}
+                    onChange={(e) => handleInputChange("insuranceProviders", e.target.value)}
+                  />
 
                   <div className="form-actions-row">
                     <button type="button" onClick={handleBack} className="button button-outline">
@@ -531,71 +505,66 @@ function CompanyRegistration() {
                 </form>
               )}
 
-              {/* Step 4: Verification & Signoff */}
               {currentStep === 4 && (
                 <form onSubmit={handleSubmit} className="reg-step-form">
-                  <h3>Step 4: Authorized Representative & Verification</h3>
-                  <p className="text-muted small">Designate an official liaison for credentialing and public inquiries.</p>
+                  <h3>Step 4: Authorized Representative &amp; Verification</h3>
+                  <p className="text-muted small mb-4">Designate an official liaison for credentialing and public inquiries.</p>
 
-                  <div className="row g-3 mb-3">
-                    <div className="col-md-6">
-                      <label className="form-label">Representative Full Name *</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="Dr. Eleanor Vance"
-                        value={formData.representativeName}
-                        onChange={(e) => handleInputChange("representativeName", e.target.value)}
-                        className="form-control"
-                      />
-                    </div>
+                  <FormRow>
+                    <FormInput
+                      id="repName"
+                      label="Representative Full Name"
+                      required
+                      icon="bi-person"
+                      placeholder="Dr. Folake Adeyemi"
+                      value={formData.representativeName}
+                      onChange={(e) => handleInputChange("representativeName", e.target.value)}
+                    />
 
-                    <div className="col-md-6">
-                      <label className="form-label">Designation / Title *</label>
-                      <input
-                        type="text"
-                        required
-                        placeholder="Chief Medical Officer / Director"
-                        value={formData.representativeTitle}
-                        onChange={(e) => handleInputChange("representativeTitle", e.target.value)}
-                        className="form-control"
-                      />
-                    </div>
-                  </div>
+                    <FormInput
+                      id="repTitle"
+                      label="Designation / Title"
+                      required
+                      icon="bi-award"
+                      placeholder="Chief Medical Director (CMD)"
+                      value={formData.representativeTitle}
+                      onChange={(e) => handleInputChange("representativeTitle", e.target.value)}
+                    />
+                  </FormRow>
 
-                  <div className="row g-3 mb-3">
-                    <div className="col-md-6">
-                      <label className="form-label">Representative Direct Email *</label>
-                      <input
-                        type="email"
-                        required
-                        placeholder="director@facility.org"
-                        value={formData.representativeEmail}
-                        onChange={(e) => handleInputChange("representativeEmail", e.target.value)}
-                        className="form-control"
-                      />
-                    </div>
+                  <FormRow>
+                    <FormInput
+                      id="repEmail"
+                      label="Representative Direct Email"
+                      type="email"
+                      required
+                      icon="bi-envelope"
+                      placeholder="cmd@facility.gov.ng"
+                      value={formData.representativeEmail}
+                      onChange={(e) => handleInputChange("representativeEmail", e.target.value)}
+                    />
 
-                    <div className="col-md-6">
-                      <label className="form-label">Direct Phone Line *</label>
-                      <input
-                        type="tel"
-                        required
-                        placeholder="+1 (555) 234-9999"
-                        value={formData.representativePhone}
-                        onChange={(e) => handleInputChange("representativePhone", e.target.value)}
-                        className="form-control"
-                      />
-                    </div>
-                  </div>
+                    <FormInput
+                      id="repPhone"
+                      label="Direct Phone Line"
+                      type="tel"
+                      required
+                      icon="bi-telephone"
+                      placeholder="+234 803 234 9999"
+                      value={formData.representativePhone}
+                      onChange={(e) => handleInputChange("representativePhone", e.target.value)}
+                    />
+                  </FormRow>
 
-                  <div className="verification-affirmation-box p-3 bg-light rounded mb-4">
-                    <div className="form-check">
-                      <input type="checkbox" required className="form-check-input" id="certifyCheck" defaultChecked />
-                      <label className="form-check-label small" htmlFor="certifyCheck">
-                        I hereby certify that I am legally authorized to register this healthcare organisation with PULSE360, and all operating licenses and bed capacity details provided are accurate.
-                      </label>
-                    </div>
+                  <div className="p-3 rounded mb-2" style={{ background: "var(--pulse-surface)", border: "1px solid var(--pulse-border)" }}>
+                    <FormCheckbox
+                      id="certifyCheck"
+                      checked={certified}
+                      onChange={(e) => setCertified(e.target.checked)}
+                      required
+                      className="mb-0"
+                      label="I hereby certify that I am legally authorized to register this Nigerian healthcare organisation with PULSE360, and all operating licenses and capacity details provided are accurate."
+                    />
                   </div>
 
                   <div className="form-actions-row">
@@ -620,23 +589,22 @@ function CompanyRegistration() {
             </div>
           )}
 
-          {/* Verification FAQ Section */}
           <div className="reg-faq-section mt-5" id="guidelines">
             <h3>Frequently Asked Questions for Providers</h3>
             <div className="faq-grid mt-3">
               <div className="faq-item">
-                <h5>What documents are required for facility verification?</h5>
-                <p>A valid State or National Department of Health operating license, institutional registration certificate, and proof of address are verified during credentialing.</p>
+                <h5>What documents are required for verification?</h5>
+                <p>A valid Federal/State Ministry of Health, HEFAMAA, MDCN, or PCN operating license and CAC registration are verified during credentialing.</p>
               </div>
 
               <div className="faq-item">
-                <h5>Is there any registration fee for hospitals and clinics?</h5>
-                <p>No. Public directory listing, emergency routing integration, and disease surveillance broadcast feeds are provided free as a public health service.</p>
+                <h5>Is there a fee for public directory listing?</h5>
+                <p>No. Citizen-facing healthcare discovery and NCDC alert integration remain free across Nigeria.</p>
               </div>
 
               <div className="faq-item">
-                <h5>How can our hospital update real-time bed availability?</h5>
-                <p>Once registered, provider representatives receive access to the Provider Portal to update ICU bed capacity, emergency triage wait times, and emergency contact lines.</p>
+                <h5>How do we manage supply requests and inventory?</h5>
+                <p>Once onboarded, facility staff can access the Command Portal (/pro) to track stock, submit supply requests, and verify deliveries.</p>
               </div>
             </div>
           </div>
